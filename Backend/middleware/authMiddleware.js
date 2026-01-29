@@ -17,7 +17,6 @@ const authMiddleware = async (req, res, next) => {
       process.env.ACCESS_TOKEN || "fallback_secret_key",
     );
 
-    // Verify user still exists in database
     const user = await userModel.findById(decoded.id);
     if (!user) {
       return res.status(401).json({
@@ -26,7 +25,6 @@ const authMiddleware = async (req, res, next) => {
       });
     }
 
-    // Add user info to request object
     req.user = {
       id: decoded.id,
       email: decoded.email,

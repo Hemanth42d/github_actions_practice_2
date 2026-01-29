@@ -16,12 +16,10 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// Auth routes
 router.post("/login", loginUser);
 router.post("/register", registerUser);
 router.post("/logout", logout);
 
-// Task routes (requires authentication middleware)
 router.post("/tasks", authMiddleware, addTask);
 router.get("/tasks", authMiddleware, getAllTasks);
 router.get("/tasks/:taskId", authMiddleware, getTaskById);

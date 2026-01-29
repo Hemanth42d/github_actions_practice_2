@@ -4,7 +4,7 @@ const userModel = require("../models/user.js");
 const addTask = async (req, res) => {
   try {
     let { taskName, priority, completed } = req.body;
-    let userId = req.user.id; // Assuming you have middleware to get user from token
+    let userId = req.user.id;
 
     if (!taskName || !priority)
       return res
@@ -18,18 +18,15 @@ const addTask = async (req, res) => {
       user: userId,
     });
 
-    // Add task to user's tasks array
     await userModel.findByIdAndUpdate(userId, {
       $push: { tasks: newTask._id },
     });
 
-    return res
-      .status(201)
-      .json({
-        success: true,
-        message: "Successfully added task",
-        task: newTask,
-      });
+    return res.status(201).json({
+      success: true,
+      message: "Successfully added task",
+      task: newTask,
+    });
   } catch (error) {
     res.status(500).json({ error: true, message: "Something went wrong" });
   }
@@ -46,7 +43,6 @@ const updateTask = async (req, res) => {
         .status(400)
         .json({ error: true, message: "Task name and priority are required" });
 
-    // Check if task belongs to user
     const task = await taskModel.findById(taskId);
     if (!task) {
       return res.status(404).json({ error: true, message: "Task not found" });
@@ -62,13 +58,11 @@ const updateTask = async (req, res) => {
       { new: true },
     );
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Task updated successfully",
-        task: updatedTask,
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Task updated successfully",
+      task: updatedTask,
+    });
   } catch (error) {
     res.status(500).json({ error: true, message: "Something went wrong" });
   }
@@ -79,7 +73,6 @@ const deleteTask = async (req, res) => {
     let { taskId } = req.params;
     let userId = req.user.id;
 
-    // Check if task belongs to user
     const task = await taskModel.findById(taskId);
     if (!task) {
       return res.status(404).json({ error: true, message: "Task not found" });
@@ -91,7 +84,6 @@ const deleteTask = async (req, res) => {
 
     await taskModel.findByIdAndDelete(taskId);
 
-    // Remove task from user's tasks array
     await userModel.findByIdAndUpdate(userId, { $pull: { tasks: taskId } });
 
     return res
@@ -159,13 +151,11 @@ const toggleTaskStatus = async (req, res) => {
       { new: true },
     );
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Task status updated",
-        task: updatedTask,
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Task status updated",
+      task: updatedTask,
+    });
   } catch (error) {
     res.status(500).json({ error: true, message: "Something went wrong" });
   }
