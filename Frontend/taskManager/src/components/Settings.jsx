@@ -43,7 +43,6 @@ const Settings = () => {
       return;
     }
 
-    // call API to update password
     setMessage("Password updated successfully!");
     setPasswords({
       currentPassword: "",

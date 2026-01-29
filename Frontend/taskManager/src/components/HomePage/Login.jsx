@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
   const location = useLocation();
-  const isLoginPage = location.pathname === "/";
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const isLoginPage = location.pathname === "/login";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,10 +36,13 @@ const Login = () => {
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      console.log("Login:", { email, password });
-      setEmail("");
-      setPassword("");
+      const result = await login({ email, password });
+
+      if (result.success) {
+        navigate("/tasks");
+      } else {
+        setError(result.message || "Login failed");
+      }
     } catch (err) {
       setError("Something's not working. Try again?");
     } finally {
@@ -45,7 +51,7 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full max-w-xs">
+    <div className="w-full max-w-md">
       <div className="bg-white rounded-lg border border-gray-300 shadow-sm">
         <div className="flex p-1 bg-gray-100 rounded-t-lg">
           <Link

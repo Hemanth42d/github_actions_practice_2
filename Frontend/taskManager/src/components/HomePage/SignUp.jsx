@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const SignUp = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { register } = useAuth();
   const isSignUpPage = location.pathname === "/";
 
   const [formData, setFormData] = useState({
@@ -25,7 +28,6 @@ const SignUp = () => {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (error) setError("");
   };
 
@@ -64,21 +66,17 @@ const SignUp = () => {
 
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      console.log("Sign up attempt:", formData);
-
-      // Reset form on success
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
+      const result = await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
       });
-      setError("");
 
-      // TODO: Handle successful signup (redirect, store token, etc.)
+      if (result.success) {
+        navigate("/tasks");
+      } else {
+        setError(result.message || "Registration failed");
+      }
     } catch (err) {
       setError("Sign up failed. Please try again.");
     } finally {
@@ -87,7 +85,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="w-full max-w-xs">
+    <div className="w-full max-w-md">
       <div className="bg-white rounded-lg border border-gray-300 shadow-sm">
         <div className="flex p-1 bg-gray-100 rounded-t-lg">
           <Link

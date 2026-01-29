@@ -1,8 +1,10 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Sidebar = () => {
   const location = useLocation();
+  const { logout } = useAuth();
 
   const menuItems = [
     {
@@ -13,6 +15,10 @@ const Sidebar = () => {
   ];
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = async () => {
+    await logout();
+  };
 
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200 w-64">
@@ -75,13 +81,13 @@ const Sidebar = () => {
         </div>
 
         <div className="mt-4 pt-4 border-t border-gray-100">
-          <Link
-            to="/"
+          <button
+            onClick={handleLogout}
             className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors"
           >
             <span>🚪</span>
-            <span>Log Out</span>
-          </Link>
+            <span>Sign Out</span>
+          </button>
         </div>
       </div>
     </div>

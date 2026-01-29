@@ -7,7 +7,12 @@ const dbConnection = require("./config/db-connection.js");
 const cookieParser = require("cookie-parser");
 const indexRoutes = require("./routes/indexRoutes");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
