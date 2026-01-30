@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Sidebar from "./HomePage/Sidebar";
+import { authAPI } from "../services/api";
 
 const Settings = () => {
   const [passwords, setPasswords] = useState({
@@ -30,7 +31,7 @@ const Settings = () => {
     }));
   };
 
-  const handlePasswordUpdate = (e) => {
+  const handlePasswordUpdate = async (e) => {
     e.preventDefault();
 
     if (passwords.newPassword !== passwords.confirmPassword) {
@@ -43,12 +44,25 @@ const Settings = () => {
       return;
     }
 
-    setMessage("Password updated successfully!");
-    setPasswords({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
+    try {
+      const response = await authAPI.updatePassword({
+        currentPassword: passwords.currentPassword,
+        newPassword: passwords.newPassword,
+      });
+
+      if (response.success) {
+        setMessage("Password updated successfully!");
+        setPasswords({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } else {
+        setMessage(response.message || "Failed to update password");
+      }
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Failed to update password");
+    }
   };
 
   return (

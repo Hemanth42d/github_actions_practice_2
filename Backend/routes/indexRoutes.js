@@ -3,6 +3,7 @@ const {
   loginUser,
   registerUser,
   logout,
+  updatePassword,
 } = require("../controllers/authController");
 const {
   addTask,
@@ -19,6 +20,7 @@ const router = express.Router();
 router.post("/login", loginUser);
 router.post("/register", registerUser);
 router.post("/logout", logout);
+router.put("/update-password", authMiddleware, updatePassword);
 
 router.post("/tasks", authMiddleware, addTask);
 router.get("/tasks", authMiddleware, getAllTasks);

@@ -7,6 +7,14 @@ import Settings from "./components/Settings";
 import Profile from "./components/Profile";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
+function App() {
+  return (
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
+  );
+}
+
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
@@ -18,56 +26,54 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  return isAuthenticated ? children : <Navigate to="/" />;
+  return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
-function AppContent() {
-  const { isAuthenticated } = useAuth();
+function AppRoutes() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Loading...
+      </div>
+    );
+  }
 
   return (
-    <>
-      <Routes>
-        <Route
-          path="/"
-          element={isAuthenticated ? <Navigate to="/tasks" /> : <HomePage />}
-        >
-          <Route index element={<SignUp />} />
-          <Route path="/login" element={<Login />} />
-        </Route>
-        <Route
-          path="/tasks"
-          element={
-            <ProtectedRoute>
-              <MyTasks />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Settings />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </>
-  );
-}
-
-function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <Routes>
+      <Route
+        path="/"
+        element={isAuthenticated ? <Navigate to="/tasks" /> : <HomePage />}
+      >
+        <Route index element={<SignUp />} />
+        <Route path="login" element={<Login />} />
+      </Route>
+      <Route
+        path="/tasks"
+        element={
+          <ProtectedRoute>
+            <MyTasks />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }
 

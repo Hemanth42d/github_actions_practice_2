@@ -82,4 +82,74 @@ const logout = (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, logout };
+const updatePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user.id;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        error: true,
+        message: "Current password and new password are required",
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        error: true,
+        message: "New password must be at least 6 characters long",
+      });
+    }
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        message: "User not found",
+      });
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await new Promise((resolve) => {
+      bcrypt.compare(currentPassword, user.password, (err, result) => {
+        resolve(result);
+      });
+    });
+
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({
+        error: true,
+        message: "Current password is incorrect",
+      });
+    }
+
+    // Hash new password
+    const saltRounds = 10;
+    const hashedNewPassword = await new Promise((resolve, reject) => {
+      bcrypt.genSalt(saltRounds, (err, salt) => {
+        if (err) reject(err);
+        bcrypt.hash(newPassword, salt, (err, hash) => {
+          if (err) reject(err);
+          resolve(hash);
+        });
+      });
+    });
+
+    // Update password in database
+    await userModel.findByIdAndUpdate(userId, {
+      password: hashedNewPassword,
+    });
+
+    res.json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: true,
+      message: "Something went wrong",
+    });
+  }
+};
+
+module.exports = { registerUser, loginUser, logout, updatePassword };
