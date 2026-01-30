@@ -32,6 +32,7 @@ const registerUser = async (req, res) => {
         return res.json({
           success: true,
           message: "user registered successfully",
+          token: token,
         });
       });
     });
@@ -58,9 +59,11 @@ const loginUser = async (req, res) => {
         let token = generateToken(user);
         res.cookie("token", token);
 
-        return res
-          .status(200)
-          .json({ success: true, message: "User logged in successfully" });
+        return res.status(200).json({
+          success: true,
+          message: "User logged in successfully",
+          token: token,
+        });
       } else {
         return res.status(401).json({
           error: true,

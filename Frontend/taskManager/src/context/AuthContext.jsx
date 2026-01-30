@@ -30,6 +30,12 @@ export const AuthProvider = ({ children }) => {
         const userData = { email: credentials.email };
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));
+
+        // Store token if provided
+        if (response.token) {
+          localStorage.setItem("token", response.token);
+        }
+
         return { success: true };
       }
       return response;
@@ -48,6 +54,12 @@ export const AuthProvider = ({ children }) => {
         const userInfo = { email: userData.email, name: userData.name };
         setUser(userInfo);
         localStorage.setItem("user", JSON.stringify(userInfo));
+
+        // Store token if provided
+        if (response.token) {
+          localStorage.setItem("token", response.token);
+        }
+
         return { success: true };
       }
       return response;
@@ -67,6 +79,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setUser(null);
       localStorage.removeItem("user");
+      localStorage.removeItem("token");
     }
   };
 
